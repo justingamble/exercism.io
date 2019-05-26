@@ -9,15 +9,11 @@ defmodule RNATranscription do
   """
   @spec to_rna([char]) :: [char]
   def to_rna(dna) do
-    Enum.reduce(dna, [], fn x, acc -> acc ++ transcribe(x) end)
+    Enum.map(dna, fn x -> transcribe(x) end)
   end
 
-  defp transcribe(?G), do: [?C]
-  defp transcribe(?C), do: [?G]
-  defp transcribe(?T), do: [?A]
-  defp transcribe(?A), do: [?U]
-  defp transcribe(unknown) do
-    raise("Unknown DNA characters: #{inspect unknown}\n")
-  end
-
+  defp transcribe(?G), do: ?C
+  defp transcribe(?C), do: ?G
+  defp transcribe(?T), do: ?A
+  defp transcribe(?A), do: ?U
 end
