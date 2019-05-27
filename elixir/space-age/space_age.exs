@@ -35,18 +35,4 @@ defmodule SpaceAge do
   defp get_earth_years(seconds) do
     seconds / @earth_seconds_in_year
   end
-
-#  @doc """
-#  format_num() can help with debugging, but is not necessarily needed.
-#  Feel free to use this function if you want to use IO.puts/1 to see the number
-#  of years without having exponents or lots of decimals involved in output.
-#
-#  ## Example
-#
-#    iex> SpaceAge.format_num(1_000_000_000 / 31557600)
-#    31.69
-#  """
-#  def format_num(float) do
-#    :erlang.float_to_binary(float, [decimals: 2])
-#  end
 end
