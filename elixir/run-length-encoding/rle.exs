@@ -56,150 +56,46 @@ defmodule RunLengthEncoder do
   #    "AABBBCCCC"
   @spec decode(String.t()) :: String.t()
   def decode(string) do
-    IO.puts("decode entered.  string=#{string}")
     chars = to_charlist(string)
-    {next_elem, rest} = List.pop_at(chars, 0)
-    IO.inspect("string=#{string}, next_elem=#{to_string(next_elem)}, rest=#{rest}")
+    {next_elem, _rest} = List.pop_at(chars, 0)
     if next_elem do
-      list = Enum.chunk_by(chars, &(_digit?(&1)))
-#      {next_elem, rest} = List.pop_at(list, 0)
-      string = _decode([], nil, hd(list), tl(list))
-      IO.puts("The final string is: #{string}")
-      string
+      list = Enum.chunk_by(chars, &(&1 >= ?0 and &1 <= ?9))
+       _decode([], nil, hd(list), tl(list))
     else
-      IO.puts("The else clause in the original decode")
-
       ""
     end
   end
 
+  # Stop condition.  No more input.  Return string we have accumulated.
   def _decode(acc, _repeat, nil, _rest) do
-    IO.puts("***** _decode.  END CONDITION REACHED")
     to_string(acc)
   end
 
-  def _decode(acc, repeat, [head | tail] = elem, rest) when head >= ?A and head <= ?z and is_nil(repeat) do
-    IO.puts("***** _decode.  ALPHA FOUND (head=#{inspect head}, NO REPEAT).")
-    IO.inspect binding()
+  # ELEM starts with an alphabet character or space character, with NO known repeat
+  def _decode(acc, repeat, [head | _tail] = elem, rest)
+      when ((head >= ?A and head <= ?z) or (head == ?\s)) and is_nil(repeat) do
 
-    {next_elem, new_rest} = List.pop_at(rest, 0)
     new_acc = [acc | elem] |> List.flatten()
+    {next_elem, new_rest} = List.pop_at(rest, 0)
     _decode( new_acc, nil, next_elem, new_rest )
   end
 
-#  def _decode(acc, repeat, [head | tail] = elem, rest) when head > ?A and head < ?z and is_integer(repeat) do
-  def _decode(acc, repeat, [head | tail] = elem, rest) when head >= ?A and head <= ?z do
-    IO.puts("***** _decode.  ALPHA FOUND (head=#{inspect head}, repeat=#{inspect repeat}).")
-    IO.inspect binding()
+  # ELEM starts with an alphabet character or space character, with a known repeat
+  def _decode(acc, repeat, [head | tail] = _elem, rest)
+      when (head >= ?A and head <= ?z) or (head == ?\s) do
 
     repeated_head = String.duplicate( List.to_string([head]), repeat)
                     |> to_charlist()
-
-    IO.puts("   --> repeated_head is '#{inspect repeated_head}'")
-    {next_elem, new_rest} = List.pop_at(rest, 0)
-
     new_acc = [acc | [repeated_head | tail]] |> List.flatten()
-    _decode( new_acc, nil, next_elem, new_rest )
-  end
-
-  def _decode(acc, repeat, [head | tail] = elem, rest) when head == ?  do
-    IO.puts("***** _decode.  SPACE LIST FOUND (head=#{inspect head}, repeat=#{inspect repeat}).")
-    IO.inspect binding()
-
-    repeated_head = String.duplicate( " ", repeat)
-                    |> to_charlist()
-
-    IO.puts("   --> repeated_head is '#{inspect repeated_head}'")
     {next_elem, new_rest} = List.pop_at(rest, 0)
-
-    new_acc = [acc | [repeated_head | tail]] |> List.flatten()
     _decode( new_acc, nil, next_elem, new_rest )
   end
 
-  def _decode(acc, repeat, head, rest) when head == ?  do
-    IO.puts("***** _decode.  SPACE FOUND (head=#{inspect head}, repeat=#{inspect repeat}).")
-    IO.inspect binding()
-
-    repeated_head = String.duplicate( " ", repeat)
-                    |> to_charlist()
-
-    IO.puts("   --> repeated_head is '#{inspect repeated_head}'")
-    {next_elem, new_rest} = List.pop_at(rest, 0)
-
-    new_acc = [acc | repeated_head] |> List.flatten()
-    _decode( new_acc, nil, next_elem, new_rest )
-  end
-
+  # ELEM contains a number
   def _decode(acc, nil, elem, rest) do
-    IO.puts("***** _decode.  INTEGER, #{inspect elem}.")
-    IO.inspect binding()
-
     repeat_num = elem |> to_string |> String.to_integer
-    IO.puts("Repeat num is #{repeat_num}")
     {next_elem, new_rest} = List.pop_at(rest, 0)
-
-    [my_head | my_tail] = next_elem
-    IO.puts("    ***** debug.")
-    IO.inspect binding()
-    if (my_head > ?A) do
-      IO.puts("MY head is > ?A")
-    end
-    if (my_head < ?z) do
-      IO.puts("MY head is < ?z")
-    end
     _decode( acc, repeat_num, next_elem, new_rest )
   end
 
-##  def _decode(acc, next_char, rest) when next_char > ?A and next_char < ?z do
-##    IO.inspect("ALPHA.  String is #{inspect [next_char | rest]}")
-###    [next_char | acc]
-##   input = [next_char | rest]
-##    IO.puts("input list is: #{input}")
-
-##    IO.inspect("after chunk_by, list is #{inspect list}")
-
-##    folded = List.foldl(list, {nil, []}, fn x, acc ->
-
-##      merge(next_char, rest, acc) end)
-##    IO.inspect("after folded, folded = #{inspect folded}")
-
-##    input
-##  end
-
-  # elem -- is a list element, containing digits or alpha chars.
-  # x -- may be a number, which is used in the next computer.  Or empty list.
-  # n -- contains the number we parsed on previous list elem
-  # acc -- the accumulator contains the string we are decoding.
-#  def merge(next_char, rest, {n, acc} = accum)
-#    when next_char > ?A and next_char < ?z and is_nil(n) do
-#
-#    next_acc = [acc | [next_char | rest]]  |> List.flatten()
-#    IO.puts("ALPHA merge. I'm adding UNCHANGED next_char to accum (#{inspect acc}).  result is #{inspect next_acc}")
-#    {nil, next_acc}
-#  end
-#
-#  def merge(next_char, _rest, {n, acc} = accum)
-#    when next_char > ?A and next_char < ?z do
-#
-#    next_acc = String.duplicate(next_char, n)
-#    IO.puts("ALPHA merge. I'm adding n=#{n} of next_char to accum.  result is #{inspect next_acc}")
-#    {nil, [accum | next_acc]}
-#  end
-#
-#  def merge(next_char, rest, {n, acc} = accum) do
-#     # we received a digit
-#     digits = [next_char | rest]
-#       |> List.flatten()
-#     IO.puts("Digit merge... #{digits}")
-#     {digits, acc}
-#  end
-#
-#  def _decode(acc, next_char, rest) do
-#    IO.inspect("NUMBER FOUND.  The number is #{inspect next_char}.  String is #{inspect [next_char | rest]}")
-#    input = [next_char | rest]
-#  end
-
-  def _digit?(char) do
-    char > ?0 and char < ?9
-  end
 end
