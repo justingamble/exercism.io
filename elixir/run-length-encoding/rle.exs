@@ -74,7 +74,7 @@ defmodule RunLengthEncoder do
   #   rest - the rest of the list to be processed, without the leading 'elem'
 
   # Stop condition.  No more input.  Return string we have accumulated.
-  def _decode(acc, _repeat, nil, _rest) do
+  def _decode(acc, _repeat, [], []) do
     to_string(acc)
   end
 
@@ -83,7 +83,7 @@ defmodule RunLengthEncoder do
       when ((head >= ?A and head <= ?z) or (head == ?\s)) and is_nil(repeat) do
 
     new_acc = [acc | elem] |> List.flatten()
-    {next_elem, new_rest} = List.pop_at(rest, 0)
+    {next_elem, new_rest} = List.pop_at(rest, 0, []) # next_elem is [] if rest is []
     _decode( new_acc, nil, next_elem, new_rest )
   end
 
@@ -95,15 +95,14 @@ defmodule RunLengthEncoder do
     repeated_head = String.duplicate( List.to_string([head]), repeat)
                     |> to_charlist()
     new_acc = [acc | [repeated_head | tail]] |> List.flatten()
-    {next_elem, new_rest} = List.pop_at(rest, 0)
+    {next_elem, new_rest} = List.pop_at(rest, 0, []) # next_elem is [] if rest is []
     _decode( new_acc, nil, next_elem, new_rest )
   end
 
   # ELEM contains a number
   def _decode(acc, nil, elem, rest) do
     repeat_num = elem |> to_string |> String.to_integer
-    {next_elem, new_rest} = List.pop_at(rest, 0)
-    _decode( acc, repeat_num, next_elem, new_rest )
+    _decode( acc, repeat_num, hd(rest), tl(rest) )
   end
 
 end
