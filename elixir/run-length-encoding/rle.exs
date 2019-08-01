@@ -105,4 +105,84 @@ defmodule RunLengthEncoder do
     _decode( acc, repeat_num, hd(rest), tl(rest) )
   end
 
+  ## *************************************************************
+  ## The above is my solution.
+  ## Alternative solutions:
+
+  ## -------------------------------------------------------------
+  ## 1. From 'paulfioravanti'.  Kudos for being a short solution!
+  #
+  #  defmodule RunLengthEncoder do
+  #    # NOTE: \1 backreferences the single character match in parentheses.
+  #    # The parentheses only serve to provide a match for the backreference.
+  #    @consecutive_data_elements ~r{([A-Za-z\s])\1+}
+  #    @run_length_encoding ~r{\d+\D}
+  #
+  #    @spec encode(String.t()) :: String.t()
+  #    def encode(""), do: ""
+  #
+  #    def encode(string) do
+  #      @consecutive_data_elements
+  #      |> Regex.replace(string, &compress/2)
+  #    end
+  #
+  #    @spec decode(String.t()) :: String.t()
+  #    def decode(""), do: ""
+  #
+  #    def decode(string) do
+  #      @run_length_encoding
+  #      |> Regex.replace(string, &reconstruct/1)
+  #    end
+  #
+  #    defp compress(whole_match, letter) do
+  #      "#{String.length(whole_match)}#{letter}"
+  #    end
+  #
+  #    defp reconstruct(whole_match) do
+  #      {count, character} = Integer.parse(whole_match)
+  #      String.duplicate(character, count)
+  #    end
+  #  end
+
+  ## -------------------------------------------------------------
+  ## 2. From 'nshafer.exs'.  I like the clarity of this solution.
+  #
+  #  defmodule RunLengthEncoder do
+  #    @spec encode(String.t()) :: String.t()
+  #    def encode(""), do: ""
+  #
+  #    def encode(string) do
+  #      string
+  #      |> String.graphemes()
+  #      |> Enum.chunk_by(fn str -> str end)
+  #      |> Enum.map(&encode_chunk/1)
+  #      |> List.to_string()
+  #    end
+  #
+  #    defp encode_chunk(chunk) do
+  #      len = length(chunk)
+  #      chr = List.first(chunk)
+  #      if len > 1 do
+  #        to_string(len) <> chr
+  #      else
+  #        chr
+  #      end
+  #    end
+  #
+  #    @spec decode(String.t()) :: String.t()
+  #    def decode(string) do
+  #      Regex.scan(~r/\d*[\w\s]/, string)
+  #      |> Enum.concat()
+  #      |> Enum.map(&decode_chunk/1)
+  #      |> List.to_string()
+  #    end
+  #
+  #    defp decode_chunk(chunk) do
+  #      case Integer.parse(chunk) do
+  #        :error -> chunk
+  #        {count, str} -> String.duplicate(str, count)
+  #      end
+  #    end
+  #  end
+
 end
