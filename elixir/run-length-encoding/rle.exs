@@ -59,12 +59,19 @@ defmodule RunLengthEncoder do
     chars = to_charlist(string)
     {next_elem, _rest} = List.pop_at(chars, 0)
     if next_elem do
+      # break into sublists of chars or integers
       list = Enum.chunk_by(chars, &(&1 >= ?0 and &1 <= ?9))
        _decode([], nil, hd(list), tl(list))
     else
       ""
     end
   end
+
+  # _decode Params:
+  #   acc - accumulator, building-up the string we will return
+  #   repeat - if previous batch contained a number, then this is that number
+  #   elem - current batch (sublist) being processed.  contains alphas or numbers.
+  #   rest - the rest of the list to be processed, without the leading 'elem'
 
   # Stop condition.  No more input.  Return string we have accumulated.
   def _decode(acc, _repeat, nil, _rest) do
@@ -84,6 +91,7 @@ defmodule RunLengthEncoder do
   def _decode(acc, repeat, [head | tail] = _elem, rest)
       when (head >= ?A and head <= ?z) or (head == ?\s) do
 
+    # List.to_string([head]) forces a character representation
     repeated_head = String.duplicate( List.to_string([head]), repeat)
                     |> to_charlist()
     new_acc = [acc | [repeated_head | tail]] |> List.flatten()
