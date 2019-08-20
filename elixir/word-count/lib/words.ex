@@ -9,13 +9,7 @@ defmodule Words do
     sentence
     |> String.split(~r/[ _!@#$%^&*()+=:,]/, trim: true)
     |> Stream.map( &String.downcase(&1) )
-    |> Stream.filter( &filter_out_blanks/1 )
     |> Enum.reduce( %{}, &word_count/2 )
-  end
-
-  defp filter_out_blanks(word) do
-    len = to_charlist(word) |> length
-    len > 0
   end
 
   defp word_count(word, acc_map) do
