@@ -7,17 +7,10 @@ defmodule Words do
   @spec count(String.t()) :: map
   def count(sentence) do
     sentence
-    |> String.replace(~r/_/, " ")
-    |> String.split
+    |> String.split(~r/[ _!@#$%^&*()+=:,]/, trim: true)
     |> Stream.map( &String.downcase(&1) )
-    |> Stream.map( &remove_punctuation(&1) )
     |> Stream.filter( &filter_out_blanks/1 )
     |> Enum.reduce( %{}, &word_count/2 )
-#    |> IO.inspect()
-  end
-
-  defp remove_punctuation(word) do
-    String.replace(word, ~r/[!@#$%^&*()+=:,]/, "")
   end
 
   defp filter_out_blanks(word) do
