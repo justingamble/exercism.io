@@ -8,3 +8,5 @@ erl_crash.dump
 *.beam
 /config/*.secret.exs
 *.exercism
+**/node_modules/
+**/.DS_Store
