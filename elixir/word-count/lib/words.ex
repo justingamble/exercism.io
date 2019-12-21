@@ -7,9 +7,17 @@ defmodule Words do
   @spec count(String.t()) :: map
   def count(sentence) do
     sentence
-    |> String.split(~r/[ _!@#$%^&*()+=:,]/, trim: true)
-    |> Stream.map( &String.downcase(&1) )
-    |> Enum.reduce( %{}, &word_count/2 )
+    |> String.downcase
+    |> split_into_list
+    |> create_map_counts
+  end
+
+  defp split_into_list(sentence) do
+    String.split(sentence, ~r/[[:blank:]_!@#$%^&*()+=:,]/u, trim: true)
+  end
+
+  defp create_map_counts(list) do
+    Enum.reduce(list, %{}, &word_count/2 )
   end
 
   defp word_count(word, acc_map) do
