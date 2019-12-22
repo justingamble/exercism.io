@@ -26,29 +26,28 @@ defmodule Words do
     Map.update(acc_map, word, 1, &(&1 + 1))
   end
 
-  ## Alternatively, the below also works, but I prefer the above because
-  ## a) the String.split parameters are simpler, and
-  ## b) it does not hardcode all the characters we want to exclude.
-  #
-  # @non_alphanum_char ~r/[[:blank:]_!@#$%^&*()+=:,]/u
-  #
-  # @spec count(String.t()) :: map
-  # def count(sentence) do
-  #   sentence
-  #   |> String.downcase
-  #   |> split_into_list
-  #   |> create_map_counts
-  # end
-  #
-  # defp split_into_list(sentence) do
-  #   String.split(sentence, @non_alphanum_char, trim: true)
-  # end
-  #
-  # defp create_map_counts(list) do
-  #   Enum.reduce(list, %{}, &word_count/2 )
-  # end
-  #
-  # defp word_count(word, acc_map) do
-  #   Map.update(acc_map, word, 1, &(&1 + 1))
-  # end
+  ## Alternatively, the below also works, using either of the
+  ## defined @non_alphanum_char module attributes.
+#   @non_alphanum_char ~r/[[:blank:]_!@#$%^&*()+=:,]/u
+#   @non_alphanum_char ~r/[^[:alnum:]\-]/u
+#
+#   @spec count(String.t()) :: map
+#   def count(sentence) do
+#     sentence
+#     |> String.downcase
+#     |> split_into_list
+#     |> create_map_counts
+#   end
+#
+#   defp split_into_list(sentence) do
+#     String.split(sentence, @non_alphanum_char, trim: true)
+#   end
+#
+#   defp create_map_counts(list) do
+#     Enum.reduce(list, %{}, &word_count/2 )
+#   end
+#
+#   defp word_count(word, acc_map) do
+#     Map.update(acc_map, word, 1, &(&1 + 1))
+#   end
 end
