@@ -21,6 +21,10 @@ defmodule RomanNumerals do
     "M" <> calc_numeral(number - 1000)
   end
 
+  def calc_numeral(number) when number >= 900 do
+    "CM" <> calc_numeral(number - 900)
+  end
+
   def calc_numeral(number) when number >= 500 do
     "D" <> calc_numeral(number - 500)
   end
@@ -39,6 +43,10 @@ defmodule RomanNumerals do
 
   def calc_numeral(number) when number >= 50 do
     "L" <> calc_numeral(number - 50)
+  end
+
+  def calc_numeral(number) when number >= 40 do
+    "XL" <> calc_numeral(number - 40)
   end
 
   def calc_numeral(number) when number >= 10 do
