@@ -74,3 +74,60 @@ defmodule RomanNumerals do
   end
 
 end
+
+## Alternative 1: Jrlamsal1256's solution
+## This uses the same concept as my solution, except that Enum.find() is used
+## instead of multiple function heads.
+#defmodule RomanNumerals do
+#  @doc """
+#  Convert the number to a roman number.
+#  """
+#  @spec numeral(pos_integer) :: String.t()
+#  def numeral(0), do: ""
+#
+#  def numeral(number) do
+#    map = [
+#      {"M",  1000},
+#      {"CM", 900},
+#      {"D",  500},
+#      {"CD", 400},
+#      {"C",  100},
+#      {"XC", 90},
+#      {"L",  50},
+#      {"XL", 40},
+#      {"X",  10},
+#      {"IX", 9},
+#      {"V",  5},
+#      {"IV", 4},
+#      {"I",  1}
+#    ]
+#    {roman, normal} = Enum.find(map, fn {_, normal} -> number >= normal end)
+#    roman <> numeral(number - normal)
+#  end
+#endi
+
+## leandrog's solution
+#defmodule RomanNumerals do
+#  @doc """
+#  Convert the number to a roman number.
+#  """
+#  @spec numeral(pos_integer) :: String.t()
+#  def numeral(number) do
+#    case number do
+#      0 -> ""
+#      9 -> "IX"
+#      4 -> "IV"
+#      x when div(x, 1000) > 0 -> "M" <> numeral(x - 1000)
+#      x when x >= 900 -> "CM" <> numeral(x - 900)
+#      x when div(x, 500) > 0 -> "D" <> numeral(x - 500)
+#      x when x >= 400 -> "CD" <> numeral(x - 400)
+#      x when div(x, 100) > 0 -> "C" <> numeral(x - 100)
+#      x when x >= 90 -> "XC" <> numeral(x - 90)
+#      x when div(x, 50) > 0 -> "L" <> numeral(x - 50)
+#      x when x >= 40 -> "XL" <> numeral(x - 40)
+#      x when div(x, 10) > 0 -> "X" <> numeral(x - 10)
+#      x when div(x, 5) > 0 -> "V" <> numeral(x - 5)
+#      x when x in 1..3 -> "I" <> numeral(x - 1)
+#    end
+#  end
+#end
