@@ -18,7 +18,7 @@
     "eslint": "^7.5.0",
     "eslint-plugin-import": "^2.18.2",
     "jest": "^26.1.0",
-    "minimist": ">=0.2.1",
+    "minimist": ">=1.2.6",
     "handlebars": ">=4.3.0"
   },
   "jest": {
